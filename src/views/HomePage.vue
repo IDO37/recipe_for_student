@@ -8,7 +8,7 @@
             <h1 class="text-2xl font-bold text-orange-600">🍳 Recipe Finder</h1>
           </div>
           <div class="flex items-center space-x-4">
-            <span class="text-gray-600">{{ user?.email }}</span>
+            <span class="text-gray-600">{{ user?.nickname || user?.email }}</span>
             <button
               @click="handleLogout"
               class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
@@ -162,11 +162,11 @@
           <div class="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
             <div>
               <h4 class="text-xl font-semibold mb-4">📧 이메일</h4>
-              <p class="text-gray-300">recipe.finder@example.com</p>
+              <p class="text-gray-300">charles5275407@gmail.com</p>
             </div>
             <div>
               <h4 class="text-xl font-semibold mb-4">📱 연락처</h4>
-              <p class="text-gray-300">010-1234-5678</p>
+              <p class="text-gray-300">010-1234-5678 <span class='text-xs'>(임시)</span></p>
             </div>
           </div>
           <div class="mt-8 text-gray-400">

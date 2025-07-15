@@ -10,8 +10,18 @@ export const useAuthStore = defineStore('auth', () => {
   const getCurrentUser = async () => {
     try {
       const { data: { user: currentUser } } = await supabase.auth.getUser()
-      user.value = currentUser
-      return currentUser
+      if (!currentUser) {
+        user.value = null
+        return null
+      }
+      // 닉네임 불러오기
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('nickname')
+        .eq('id', currentUser.id)
+        .single()
+      user.value = { ...currentUser, nickname: profile?.nickname || '' }
+      return user.value
     } catch (error) {
       console.error('사용자 정보 가져오기 실패:', error)
       return null
@@ -26,11 +36,19 @@ export const useAuthStore = defineStore('auth', () => {
         email,
         password
       })
-      
       if (error) throw error
-      
-      user.value = data.user
-      return { success: true, user: data.user }
+      // 닉네임 불러오기
+      let nickname = ''
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('nickname')
+          .eq('id', data.user.id)
+          .single()
+        nickname = profile?.nickname || ''
+      }
+      user.value = { ...data.user, nickname }
+      return { success: true, user: user.value }
     } catch (error) {
       console.error('로그인 실패:', error)
       return { success: false, error: error.message }
@@ -40,18 +58,23 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // 회원가입
-  const signUp = async (email, password) => {
+  const signUp = async (email, password, nickname) => {
     loading.value = true
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password
       })
-      
       if (error) throw error
-      
-      user.value = data.user
-      return { success: true, user: data.user }
+      // 프로필에 닉네임 저장
+      if (data.user) {
+        await supabase.from('profiles').insert({
+          id: data.user.id,
+          nickname
+        })
+      }
+      user.value = { ...data.user, nickname }
+      return { success: true, user: user.value }
     } catch (error) {
       console.error('회원가입 실패:', error)
       return { success: false, error: error.message }

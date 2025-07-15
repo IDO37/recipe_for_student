@@ -16,6 +16,18 @@
       <form class="mt-8 space-y-6" @submit.prevent="handleRegister">
         <div class="rounded-md shadow-sm -space-y-px">
           <div>
+            <label for="nickname" class="sr-only">닉네임</label>
+            <input
+              id="nickname"
+              v-model="nickname"
+              name="nickname"
+              type="text"
+              required
+              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm"
+              placeholder="닉네임"
+            />
+          </div>
+          <div>
             <label for="email" class="sr-only">이메일 주소</label>
             <input
               id="email"
@@ -98,6 +110,7 @@ const authStore = useAuthStore()
 const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+const nickname = ref('')
 const error = ref('')
 const loading = ref(false)
 
@@ -110,18 +123,18 @@ const handleRegister = async () => {
     error.value = '비밀번호가 일치하지 않거나 너무 짧습니다.'
     return
   }
-  
+  if (!nickname.value) {
+    error.value = '닉네임을 입력해주세요.'
+    return
+  }
   error.value = ''
   loading.value = true
-  
-  const result = await authStore.signUp(email.value, password.value)
-  
+  const result = await authStore.signUp(email.value, password.value, nickname.value)
   if (result.success) {
     router.push('/home')
   } else {
     error.value = result.error || '회원가입에 실패했습니다.'
   }
-  
   loading.value = false
 }
 </script> 
