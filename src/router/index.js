@@ -28,6 +28,12 @@ const routes = [
     name: 'RecipeDetail',
     component: () => import('../views/RecipeDetailPage.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: () => import('../views/AdminPage.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true }
   }
 ]
 
@@ -44,6 +50,11 @@ router.beforeEach(async (to, from, next) => {
     const user = await authStore.getCurrentUser()
     if (!user) {
       next('/login')
+      return
+    }
+    if (to.meta.requiresAdmin && user.role !== 'admin') {
+      alert('관리자만 접근 가능합니다.')
+      next('/home')
       return
     }
   }
