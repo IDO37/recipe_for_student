@@ -30,6 +30,7 @@
           다양한 요리 레시피를 검색하고, 필터링하여 원하는 요리를 쉽게 찾을 수 있습니다.
           간단한 재료부터 복잡한 요리까지, 모든 레시피가 여러분을 기다리고 있어요.
         </p>
+        <button @click="goToUpload" class="bg-white text-orange-600 font-bold px-6 py-2 rounded-lg shadow hover:bg-orange-100 transition-colors">레시피 등록</button>
       </div>
     </section>
 
@@ -197,6 +198,19 @@ const selectedCategory = ref('')
 const selectedDifficulty = ref('')
 const selectedCookingTime = ref('')
 
+const uploadMessage = ref('')
+const form = ref({
+  title: '',
+  description: '',
+  category: '',
+  difficulty: '',
+  cooking_time: '',
+  ingredients: '',
+  instructions: '',
+  tips: '',
+  nutrition: ''
+})
+
 const handleSearch = () => {
   recipeStore.updateFilters({
     search: searchQuery.value,
@@ -221,6 +235,34 @@ const viewRecipe = (recipeId) => {
 const handleLogout = async () => {
   await authStore.signOut()
   router.push('/')
+}
+
+const handleUpload = async () => {
+  // 입력값 가공
+  const recipe = {
+    title: form.value.title,
+    description: form.value.description,
+    category: form.value.category,
+    difficulty: form.value.difficulty,
+    cooking_time: form.value.cooking_time,
+    ingredients: form.value.ingredients ? form.value.ingredients.split(',').map(s => s.trim()) : [],
+    instructions: form.value.instructions ? form.value.instructions.split(',').map(s => s.trim()) : [],
+    tips: form.value.tips,
+    nutrition: form.value.nutrition ? JSON.parse(form.value.nutrition) : null,
+    image_url: null // 이미지 업로드는 나중에
+  }
+  const result = await recipeStore.addRecipe(recipe)
+  if (result.success) {
+    uploadMessage.value = '레시피가 성공적으로 등록되었습니다!'
+    // 폼 초기화
+    form.value = { title: '', description: '', category: '', difficulty: '', cooking_time: '', ingredients: '', instructions: '', tips: '', nutrition: '' }
+  } else {
+    uploadMessage.value = '등록 실패: ' + result.message
+  }
+}
+
+const goToUpload = () => {
+  router.push('/upload')
 }
 
 onMounted(() => {
