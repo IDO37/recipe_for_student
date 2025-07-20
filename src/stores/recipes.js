@@ -70,20 +70,6 @@ export const useRecipeStore = defineStore('recipes', () => {
     }
   }
 
-  // 레시피 추가
-  const addRecipe = async (recipe) => {
-    try {
-      const { error } = await supabase.from('recipes').insert([recipe])
-      if (error) throw error
-      // 업로드 후 목록 갱신
-      await fetchRecipes()
-      return { success: true }
-    } catch (error) {
-      console.error('레시피 업로드 실패:', error)
-      return { success: false, message: error.message }
-    }
-  }
-
   // 필터 업데이트
   const updateFilters = (newFilters) => {
     filters.value = { ...filters.value, ...newFilters }
@@ -99,6 +85,20 @@ export const useRecipeStore = defineStore('recipes', () => {
       cookingTime: ''
     }
     fetchRecipes()
+  }
+
+  // 레시피 추가
+  const addRecipe = async (recipe) => {
+    try {
+      const { error } = await supabase.from('recipes').insert([recipe])
+      if (error) throw error
+      // 업로드 후 목록 갱신
+      await fetchRecipes()
+      return { success: true }
+    } catch (error) {
+      console.error('레시피 업로드 실패:', error)
+      return { success: false, message: error.message }
+    }
   }
 
   return {

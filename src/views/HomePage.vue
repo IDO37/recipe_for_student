@@ -198,19 +198,6 @@ const selectedCategory = ref('')
 const selectedDifficulty = ref('')
 const selectedCookingTime = ref('')
 
-const uploadMessage = ref('')
-const form = ref({
-  title: '',
-  description: '',
-  category: '',
-  difficulty: '',
-  cooking_time: '',
-  ingredients: '',
-  instructions: '',
-  tips: '',
-  nutrition: ''
-})
-
 const handleSearch = () => {
   recipeStore.updateFilters({
     search: searchQuery.value,
@@ -235,30 +222,6 @@ const viewRecipe = (recipeId) => {
 const handleLogout = async () => {
   await authStore.signOut()
   router.push('/')
-}
-
-const handleUpload = async () => {
-  // 입력값 가공
-  const recipe = {
-    title: form.value.title,
-    description: form.value.description,
-    category: form.value.category,
-    difficulty: form.value.difficulty,
-    cooking_time: form.value.cooking_time,
-    ingredients: form.value.ingredients ? form.value.ingredients.split(',').map(s => s.trim()) : [],
-    instructions: form.value.instructions ? form.value.instructions.split(',').map(s => s.trim()) : [],
-    tips: form.value.tips,
-    nutrition: form.value.nutrition ? JSON.parse(form.value.nutrition) : null,
-    image_url: null // 이미지 업로드는 나중에
-  }
-  const result = await recipeStore.addRecipe(recipe)
-  if (result.success) {
-    uploadMessage.value = '레시피가 성공적으로 등록되었습니다!'
-    // 폼 초기화
-    form.value = { title: '', description: '', category: '', difficulty: '', cooking_time: '', ingredients: '', instructions: '', tips: '', nutrition: '' }
-  } else {
-    uploadMessage.value = '등록 실패: ' + result.message
-  }
 }
 
 const goToUpload = () => {
